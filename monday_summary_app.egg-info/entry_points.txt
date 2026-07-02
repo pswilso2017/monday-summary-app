@@ -1,0 +1,2 @@
+[console_scripts]
+monday-summary = monday_summary_app.cli:main

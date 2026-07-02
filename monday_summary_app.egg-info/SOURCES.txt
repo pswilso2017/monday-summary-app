@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+monday_summary_app/__init__.py
+monday_summary_app/cli.py
+monday_summary_app.egg-info/PKG-INFO
+monday_summary_app.egg-info/SOURCES.txt
+monday_summary_app.egg-info/dependency_links.txt
+monday_summary_app.egg-info/entry_points.txt
+monday_summary_app.egg-info/requires.txt
+monday_summary_app.egg-info/top_level.txt
