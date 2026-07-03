@@ -14,33 +14,67 @@ A small reusable Python application that retrieves a concise summary of a single
 | [`requirements.txt`](requirements.txt) | Minimal runtime dependency list. |
 | [`README.md`](README.md) | Setup and usage guide. |
 | [`sample-output.html`](sample-output.html) | Static sample of the HTML output format for reference. |
+| `dist/monday-summary.exe` | Standalone Windows executable (no Python required). |
 
 ---
 
 ## Configuration
 
-The app reads its required settings from environment variables. Both must be set before running.
+The app accepts its required settings either as **CLI flags** or **environment variables**. Flags take priority when both are provided.
 
-| Variable | Description |
-|---|---|
-| `MONDAY_API_TOKEN` | Your monday.com personal API token. |
-| `MONDAY_BOARD_ID` | The numeric ID of the board to summarise. |
+| CLI flag | Environment variable | Description |
+|---|---|---|
+| `--token TOKEN` | `MONDAY_API_TOKEN` | Your monday.com personal API token. |
+| `--board-id ID` | `MONDAY_BOARD_ID` | The numeric ID of the board to summarise. |
 
-### Linux or macOS
+### Passing credentials as flags (quickest for one-off use)
+
+```bash
+monday-summary --token your_token_here --board-id 1234567890
+```
+
+### Setting environment variables (recommended for repeated use)
+
+#### Linux or macOS
 
 ```bash
 export MONDAY_API_TOKEN=your_token_here
 export MONDAY_BOARD_ID=1234567890
 ```
 
-### Windows PowerShell
+#### Windows PowerShell
 
 ```powershell
 $env:MONDAY_API_TOKEN = "your_token_here"
 $env:MONDAY_BOARD_ID = "1234567890"
 ```
 
-If either variable is missing, the app exits immediately with a clear error message listing which variable(s) need to be set.
+If either value is missing from both sources, the app exits immediately with a clear error message.
+
+---
+
+## Standalone executable (no Python required)
+
+If you just want to run the tool on Windows without installing Python, use the pre-built executable in `dist/`.
+
+```powershell
+# Run from the dist\ folder
+.\dist\monday-summary.exe --token your_token_here --board-id 1234567890
+
+# Generate an HTML report
+.\dist\monday-summary.exe --token your_token_here --board-id 1234567890 --html --open
+```
+
+That's it — no installation, no Python, no dependencies.
+
+### Rebuilding the executable
+
+If you modify the source and want to rebuild `dist/monday-summary.exe`, you need Python 3.13 and PyInstaller:
+
+```powershell
+py -3.13 -m pip install pyinstaller requests
+py -3.13 -m PyInstaller --onefile --name monday-summary --distpath dist summary.py
+```
 
 ---
 
@@ -87,14 +121,17 @@ You can run the app as a script, as a Python module, or as an installed CLI comm
 ### Linux or macOS
 
 ```bash
-# Script entry point
+# Pass credentials as flags
+python summary.py --token your_token_here --board-id 1234567890
+
+# Use environment variables (set once, omit flags)
 python summary.py
 
 # Python module entry point
-python -m monday_summary_app
+python -m monday_summary_app --token your_token_here --board-id 1234567890
 
 # Installed CLI entry point
-monday-summary
+monday-summary --token your_token_here --board-id 1234567890
 
 # Generate HTML in monday-summary-app/summary.html
 python summary.py --html
@@ -109,14 +146,17 @@ python summary.py --updates 5
 ### Windows PowerShell
 
 ```powershell
-# Script entry point
+# Pass credentials as flags
+python .\summary.py --token your_token_here --board-id 1234567890
+
+# Use environment variables (set once, omit flags)
 python .\summary.py
 
 # Python module entry point
-python -m monday_summary_app
+python -m monday_summary_app --token your_token_here --board-id 1234567890
 
 # Installed CLI entry point
-monday-summary
+monday-summary --token your_token_here --board-id 1234567890
 
 # Generate HTML in monday-summary-app\summary.html
 python .\summary.py --html

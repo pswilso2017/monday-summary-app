@@ -38,22 +38,23 @@ query ($boardId: ID!, $maxUpdates: Int!) {
 """
 
 
-def get_config():
-    """Read required settings from environment variables."""
-    token = os.environ.get("MONDAY_API_TOKEN", "").strip()
-    board_id = os.environ.get("MONDAY_BOARD_ID", "").strip()
+def get_config(args):
+    """Read required settings from CLI args, falling back to environment variables."""
+    token = (args.token or os.environ.get("MONDAY_API_TOKEN", "")).strip()
+    board_id = (args.board_id or os.environ.get("MONDAY_BOARD_ID", "")).strip()
 
     missing = []
     if not token:
-        missing.append("MONDAY_API_TOKEN")
+        missing.append("MONDAY_API_TOKEN  (or pass --token)")
     if not board_id:
-        missing.append("MONDAY_BOARD_ID")
+        missing.append("MONDAY_BOARD_ID   (or pass --board-id)")
 
     if missing:
         print(
-            "Error: the following required environment variable(s) are not set:\n"
+            "Error: the following required value(s) are not set:\n"
             + "\n".join(f"  {v}" for v in missing)
-            + "\n\nSet them before running this script, for example:\n"
+            + "\n\nProvide them as flags or environment variables, for example:\n"
+            "  monday-summary --token YOUR_TOKEN --board-id 1234567890\n"
             "  export MONDAY_API_TOKEN=your_token_here\n"
             "  export MONDAY_BOARD_ID=1234567890",
             file=sys.stderr,
@@ -66,6 +67,19 @@ def get_config():
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Print a concise summary of a monday.com board.",
+    )
+    parser.add_argument(
+        "--token",
+        default=None,
+        metavar="TOKEN",
+        help="monday.com personal API token (overrides MONDAY_API_TOKEN env var).",
+    )
+    parser.add_argument(
+        "--board-id",
+        default=None,
+        dest="board_id",
+        metavar="ID",
+        help="Numeric board ID to summarise (overrides MONDAY_BOARD_ID env var).",
     )
     parser.add_argument(
         "--html",
@@ -330,7 +344,7 @@ def open_in_browser(path):
 
 def main():
     args = parse_args()
-    config = get_config()
+    config = get_config(args)
     app_dir = pathlib.Path(__file__).resolve().parent.parent
     html_path = app_dir / "summary.html"
 
