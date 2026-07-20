@@ -349,11 +349,7 @@ def main():
     html_path = app_dir / "summary.html"
 
     summary = fetch_board_summary(config, max_updates=args.updates)
-    print_summary(summary)
-
-    if args.html:
-        write_html(summary, path=html_path)
-        if args.open_browser:
-            open_in_browser(path=html_path)
+    write_html(summary, path=html_path)
+    open_in_browser(path=html_path)
 
     return 0
